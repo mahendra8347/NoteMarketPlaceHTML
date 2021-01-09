@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- important meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0 ,user-scalable=no">
+
+    <!-- title -->
+    <title>Notes Marketplace</title>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="images/homepage/favicon.ico">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="css/font-awesome/font-awesome.min.css">
+
+    <!-- Bootstrap Css    -->
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css">
+
+    <!-- Navbar CSS -->
+    <link rel="stylesheet" href="css/navbar.css">
+
+    <!-- Footer CSS -->
+    <link rel="stylesheet" href="css/footer.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="css/responsive.css">
+
+</head>
+
+<body>
+
+    <div id="page-container">
+        <div id="content-wrap">
+
+            <!-- navabr -->
+            <div>
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container">
+                        <a class="navbar-brand" href="dashboard.html"><img src="images/homepage/logo.png" alt="logo"></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item ">
+                                    <a class="nav-link" href="dashboard.html">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="dropdown-navbar">
+                                        <a class="dropbtn-navbar nav-link" href="#">Notes</a>
+                                        <div class="dropdown-content-navbar">
+                                            <a href="notes-under-review.html">Notes Under Review</a>
+                                            <a href="published-notes.html">Published Notes</a>
+                                            <a href="downloaded-notes.html">Downloaded Notes</a>
+                                            <a href="rejected-notes.html">Rejected Notes</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="members-page.html">Members</a>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="dropdown-navbar">
+                                        <a class="dropbtn-navbar nav-link" href="#">Reports</a>
+                                        <div class="dropdown-content-navbar">
+                                            <a href="spam-reports.html">Spam Reports</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="dropdown-navbar">
+                                        <a class="dropbtn-navbar nav-link active" href="#">Setting</a>
+                                        <div class="dropdown-content-navbar">
+                                            <a href="manage-system-configuration.html">Manage System Configuration</a>
+                                            <a href="manage-administrator.html">Manage Administrator</a>
+                                            <a href="manage-category.html">Manage Category</a>
+                                            <a href="manage-type.html">Manage Type</a>
+                                            <a href="manage-country.html">Manage Countyies</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <div class="dropdown-profile">
+                                        <a class="dropbtn-profile nav-link" href="#"><img src="images/homepage/testimonial/client-1.jpg" alt="customer-image"></a>
+                                        <div class="dropdown-content-profile">
+                                            <a href="my-profile.html">Update Profile</a>
+                                            <a href="#">Change Password</a>
+                                            <a href="#">logout</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+
+                                <div class="login-note-btn">
+                                    <button><a href="#">Logout</a></button>
+                                </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            <!-- navabr End -->
+
+            <div class="manage-administrator">
+
+                <div class="container">
+
+                    <div class="row">
+                        <div class="vertical-heading-sm col-md-12 col-sm-12 col-xs-12">
+                            <h3>Manage Administrator</h3>
+                        </div>
+                    </div>
+
+                    <div class="row top-bar">
+                        <div class="col-md-6">
+                            <a href="add-administrator.html"><button class="btn-add-detail">add administrator</button></a>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="progress-note-btn">
+                                <input type="text" class="search-enter-progress" placeholder="Search" title="Type
+                                        in a name" />
+                                <a href=""><button>Search</button></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-area">
+
+                        <div class="progress-table general-big-table" style="overflow-x: auto;">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">sr no.</th>
+                                        <th scope="col">first name</th>
+                                        <th scope="col">last name</th>
+                                        <th scope="col">email</th>
+                                        <th scope="col">phone no</th>
+                                        <th scope="col">date added</th>
+                                        <th scope="col">active</th>
+                                        <th scope="col">action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>khayati</td>
+                                        <td>patel</td>
+                                        <td>testing123@gmail.com</td>
+                                        <td>9998887776</td>
+                                        <td>09-10-2020,10:10</td>
+                                        <td>Yes</td>
+                                        <td>
+                                            <a href="#"><img src="images/admin/edit.png" class="edit-action" alt="edit-icon" /></a>
+                                            <a href="#"><img src="images/admin/delete.png" class="edit-action" alt="edit-icon" /></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>Rahul</td>
+                                        <td>patel</td>
+                                        <td>testing123@gmail.com</td>
+                                        <td>9998887776</td>
+                                        <td>09-10-2020,10:10</td>
+                                        <td>Yes</td>
+                                        <td>
+                                            <a href="#"><img src="images/admin/edit.png" class="edit-action" alt="edit-icon" /></a>
+                                            <a href="#"><img src="images/admin/delete.png" class="edit-action" alt="edit-icon" /></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>Suman</td>
+                                        <td>patel</td>
+                                        <td>testing123@gmail.com</td>
+                                        <td>9998887776</td>
+                                        <td>09-10-2020,10:10</td>
+                                        <td>No</td>
+                                        <td>
+                                            <a href="#"><img src="images/admin/edit.png" class="edit-action" alt="edit-icon" /></a>
+                                            <a href="#"><img src="images/admin/delete.png" class="edit-action" alt="edit-icon" /></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td>raj</td>
+                                        <td>patel</td>
+                                        <td>testing123@gmail.com</td>
+                                        <td>9998887776</td>
+                                        <td>09-10-2020,10:10</td>
+                                        <td>Yes</td>
+                                        <td>
+                                            <a href="#"><img src="images/admin/edit.png" class="edit-action" alt="edit-icon" /></a>
+                                            <a href="#"><img src="images/admin/delete.png" class="edit-action" alt="edit-icon" /></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td>Niya</td>
+                                        <td>patel</td>
+                                        <td>testing123@gmail.com</td>
+                                        <td>9998887776</td>
+                                        <td>09-10-2020,10:10</td>
+                                        <td>Yes</td>
+                                        <td>
+                                            <a href="#"><img src="images/admin/edit.png" class="edit-action" alt="edit-icon" /></a>
+                                            <a href="#"><img src="images/admin/delete.png" class="edit-action" alt="edit-icon" /></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination-section">
+                            <div class="pagination-notes">
+                                <div class="pagination-number">
+                                    <a href="#"><i class="fa fa-angle-left"></i></a>
+                                    <a href="#" class="active">1</a>
+                                    <a href="#">2</a>
+                                    <a href="#">3</a>
+                                    <a href="#">4</a>
+                                    <a href="#">5</a>
+                                    <a href="#"><i class="fa fa-angle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <footer id="footer">
+            <!-- footer section -->
+            <div class="footer">
+                <div class="container">
+                    <div class="row">
+                        <div id="text-area" class="col-md-6">
+                            <p>Version : 1.1.24</p>
+                        </div>
+                        <div id="icon-area" class="col-md-6">
+                            <p>Copyright <i class="fa fa-copyright"></i> TatvaSoft All rights reserved.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- footer section End -->
+        </footer>
+    </div>
+
+    <!-- Jquery   -->
+    <script src="js/jquery.min.js"></script>
+
+    <!-- Bootstrap Js -->
+    <script src="js/bootstrap/bootstrap.min.js"></script>
+
+    <!-- Custom Js -->
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>
