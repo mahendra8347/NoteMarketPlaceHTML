@@ -67,6 +67,16 @@
         display: contents;
     }
 
+    a.dropbtn-profile.nav-link.active span {
+        display: inline-block;
+        margin-left: auto;
+    }
+    
+    a.dropbtn-navbar.nav-link span {
+        display: inline-block;
+        transform: translateX(4000%)
+    }
+
     /* mobile menu responsive - end */
 
 
@@ -247,6 +257,7 @@
 /* Extra Small Devices (Landscape Phones & Portrait Tablets) */
 
 @media (max-width: 767px) {
+
     /* mobile menu responsive -start */
     a.dropbtn-navbar.nav-link.active {
         display: flex;
@@ -262,6 +273,16 @@
 
     .dropdown-profile:hover .dropdown-content-profile {
         display: contents;
+    }
+    
+    a.dropbtn-profile.nav-link.active span {
+        display: inline-block;
+        margin-left: auto;
+    }
+    
+    a.dropbtn-navbar.nav-link span {
+        display: inline-block;
+        transform: translateX(900%)
     }
 
     /* mobile menu responsive - end */
