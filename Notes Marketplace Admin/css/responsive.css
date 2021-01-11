@@ -71,11 +71,6 @@
         display: inline-block;
         margin-left: auto;
     }
-    
-    a.dropbtn-navbar.nav-link span {
-        display: inline-block;
-        transform: translateX(4000%)
-    }
 
     /* mobile menu responsive - end */
 
@@ -278,11 +273,6 @@
     a.dropbtn-profile.nav-link.active span {
         display: inline-block;
         margin-left: auto;
-    }
-    
-    a.dropbtn-navbar.nav-link span {
-        display: inline-block;
-        transform: translateX(900%)
     }
 
     /* mobile menu responsive - end */
