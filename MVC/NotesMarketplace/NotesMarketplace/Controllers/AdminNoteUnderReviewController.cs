@@ -10,7 +10,7 @@ using System.Data.Entity;
 
 namespace NotesMarketplace.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     [RoutePrefix("Admin")]
     public class AdminNoteUnderReviewController : Controller
     {
@@ -24,13 +24,13 @@ namespace NotesMarketplace.Controllers
             User userObj = dbobj.Users.Where(x => x.EmailID == EmailID).FirstOrDefault();
 
 
-            List<SellerNote> NoteTitlePublished = dbobj.SellerNotes.Where(x => x.IsActive == true && (x.Title.Contains(SearchUnderReview) || SearchUnderReview == null)).ToList();
+            List<SellerNote> NoteTitlePublished = dbobj.SellerNotes.Where(x => x.IsActive == true && (x.Title.Contains(SearchUnderReview)|| x.NoteCategory.Name.Contains(SearchUnderReview) || x.User.FirstName.Contains(SearchUnderReview) || x.User.LastName.Contains(SearchUnderReview) || (x.ModifiedDate.Value.Day + "-" + x.ModifiedDate.Value.Month + "-" + x.ModifiedDate.Value.Year).Contains(SearchUnderReview) || SearchUnderReview == null)).ToList();
             List<NoteCategory> CategoryNamePublished = dbobj.NoteCategories.ToList();
             List<ReferenceData> StatusNamePublished = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value != "Rejected" && x.Value != "Removed" && x.IsActive == true).ToList();
             List<User> UserDetails = dbobj.Users.ToList();
 
 
-            ViewBag.DateSortParamPublish = string.IsNullOrEmpty(SortOrderUnderReview) ? "CreatedDate_asc" : "";
+            ViewBag.DateSortParamPublish = string.IsNullOrEmpty(SortOrderUnderReview) ? "ModifiedDate_asc" : "";
             ViewBag.TitleSortParamPublish = SortOrderUnderReview == "Title" ? "Title_desc" : "Title";
             ViewBag.CategorySortParamPublish = SortOrderUnderReview == "Category" ? "Category_desc" : "Category";
             ViewBag.SellerSortParamPublish = SortOrderUnderReview == "Seller" ? "Seller_desc" : "Seller";
@@ -55,8 +55,8 @@ namespace NotesMarketplace.Controllers
 
             switch (SortOrderUnderReview)
             {
-                case "CreatedDate_asc":
-                    NotesUnderReview = NotesUnderReview.OrderBy(x => x.NoteDetails.CreatedDate);
+                case "ModifiedDate_asc":
+                    NotesUnderReview = NotesUnderReview.OrderBy(x => x.NoteDetails.ModifiedDate);
                     break;
                 case "Title_desc":
                     NotesUnderReview = NotesUnderReview.OrderByDescending(x => x.NoteDetails.Title);
@@ -84,11 +84,11 @@ namespace NotesMarketplace.Controllers
                     NotesUnderReview = NotesUnderReview.OrderBy(x => x.Status.Value);
                     break;
                 default:
-                    NotesUnderReview = NotesUnderReview.OrderByDescending(x => x.NoteDetails.CreatedDate);
+                    NotesUnderReview = NotesUnderReview.OrderByDescending(x => x.NoteDetails.ModifiedDate);
                     break;
             }
 
-            var Seller = dbobj.Users.Where(x => x.IsEmailVerified == true && x.RoleID == 1)
+            var Seller = dbobj.Users.Where(x => x.IsEmailVerified == true && x.RoleID == 1 && x.IsActive == true)
                         .Select(s => new
                         {
                             Text = s.FirstName + "" + s.LastName,
@@ -116,7 +116,7 @@ namespace NotesMarketplace.Controllers
 
             if (note == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             note.Status = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value == "Published").Select(x => x.ID).FirstOrDefault();
@@ -127,6 +127,8 @@ namespace NotesMarketplace.Controllers
             dbobj.Entry(note).State = EntityState.Modified;
             dbobj.SaveChanges();
 
+            TempData["success"] = user.FirstName + " " + user.LastName;
+            TempData["message"] = "Note has been Approved";
             return RedirectToAction("NotesUnderReview", "Admin");
         }
 
@@ -147,7 +149,7 @@ namespace NotesMarketplace.Controllers
 
             if (note == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             note.Status = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value == "In Review").Select(x => x.ID).FirstOrDefault();
@@ -156,6 +158,9 @@ namespace NotesMarketplace.Controllers
             note.ActionedBy = user.ID;
             dbobj.Entry(note).State = EntityState.Modified;
             dbobj.SaveChanges();
+
+            TempData["success"] = user.FirstName + " " + user.LastName;
+            TempData["message"] = "Note Status has been changed";
             return RedirectToAction("NotesUnderReview", "Admin");
         }
 
@@ -175,7 +180,7 @@ namespace NotesMarketplace.Controllers
 
             if (note == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             note.Status = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value.ToLower() == "rejected").Select(x => x.ID).FirstOrDefault();
@@ -186,6 +191,9 @@ namespace NotesMarketplace.Controllers
             dbobj.Entry(note).State = EntityState.Modified;
             dbobj.SaveChanges();
 
+
+            TempData["success"] = user.FirstName + " " + user.LastName;
+            TempData["message"] = "Note has been Rejected";
             return RedirectToAction("NotesUnderReview", "Admin");
         }
     }

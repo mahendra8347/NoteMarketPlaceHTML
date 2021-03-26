@@ -43,11 +43,11 @@
                                 <div class="download-btn">
                                     @if (@Model.IsPaid == false)
                                     {
-                                        <a href="/EditNote/DownloadAttechedFile/@Model.ID"><button>download</button></a>
+                                        <a href="/Admin/DownloadAttechedFile/@Model.ID"><button>download</button></a>
                                     }
                                     else
                                     {
-                                        <a href="/EditNote/DownloadAttechedFile/@Model.ID"><button><text>download/</text><span>$@Model.SellingPrice</span></button></a>
+                                        <a href="/Admin/DownloadAttechedFile/@Model.ID"><button><text>download/</text><span>$@Model.SellingPrice</span></button></a>
                                     }
                                 </div>
                             </div>
@@ -64,31 +64,94 @@
 
                         <div class="d-flex">
                             <span class="mr-auto title">Institution:</span>
-                            <div class="ml-auto title-velue">@Model.UniversityName</div>
+                            <div class="ml-auto title-velue">
+                                @if (@Model.UniversityName != null)
+                                {
+                                    @Model.UniversityName
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </div>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Country:</span>
-                            <span class="ml-auto title-velue">@ViewBag.Country</span>
+                            <span class="ml-auto title-velue">
+                                @if (@ViewBag.Country != null)
+                                {
+                                    @ViewBag.Country
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </span>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Course Name:</span>
-                            <span class="ml-auto title-velue">@Model.Course</span>
+                            <span class="ml-auto title-velue">
+                                @if (@Model.Course != null)
+                                {
+                                    @Model.Course
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </span>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Course Code:</span>
-                            <span class="ml-auto title-velue">@Model.CourseCode</span>
+                            <span class="ml-auto title-velue">
+                                @if (@Model.CourseCode != null)
+                                {
+                                    @Model.CourseCode
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </span>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Professor:</span>
-                            <span class="ml-auto title-velue">@Model.Professor</span>
+                            <span class="ml-auto title-velue">
+                                @if (@Model.Professor != null)
+                                {
+                                    @Model.Professor
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </span>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Number of pages:</span>
-                            <span class="ml-auto title-velue">@Model.NumberofPages</span>
+                            <span class="ml-auto title-velue">
+                                @if (@Model.NumberofPages != null)
+                                {
+                                    @Model.NumberofPages
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </span>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Approved Date:</span>
-                            <span class="ml-auto title-velue">@Model.CreatedDate</span>
+                            <span class="ml-auto title-velue">
+                                @if (@Model.PubilshedDate != null)
+                                {
+                                    @Model.PubilshedDate.Value.ToString("dd MMMM yyyy")
+                                }
+                                else
+                                {
+                                    <text>N/A</text>
+                                }
+                            </span>
                         </div>
                         <div class="d-flex">
                             <span class="mr-auto title">Rating:</span>
@@ -186,24 +249,25 @@
                             <h3>Customer Reviews</h3>
                         </div>
 
-                        <div id="testmonials">
+                        @{
+                            var lastThreeReview = (from p in Model.SellerNotesReviews
+                                                   orderby p.CreatedDate descending
+                                                   select p);
 
-                            <!-- Testmonial 01 -->
-                            @{
-                                var lastThreeReview = (from p in Model.SellerNotesReviews
-                                                       orderby p.CreatedDate descending
-                                                       select p).Take(3);
-
-                                if (lastThreeReview.Count() == 0)
-                                {
-                                    <div class="notes-vertical-heading">
-                                        <h3>No Reviews Are Available</h3>
-                                    </div>
-                                }
-                                else
-                                {
-                                    foreach (var item in lastThreeReview)
+                            if (lastThreeReview.Count() == 0)
+                            {
+                                <div class="notes-vertical-heading">
+                                    <h3>No Reviews Are Available</h3>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="testmonials" style="overflow: auto; height:360px;">
+                                    @foreach (var item in lastThreeReview)
                                     {
+
+                                        <!-- Testmonials -->
+
                                         <div class="testimonial">
                                             <div class="row">
                                                 <div class="col-md-1">
@@ -217,7 +281,7 @@
                                                         <div class="row">
 
                                                             <div class="rate">
-                                                                @if (@item.Ratings > 0)
+                                                                @if (ratingCount > 0)
                                                                 {
 
                                                                     for (int i = 1; i <= @item.Ratings; i++)
@@ -244,15 +308,14 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-1">
-                                                    <i role="button"><img src="/Content/Admin/images/admin/delete.png" alt="delete-icon"></i>
+                                                    <a href="/Admin/DeleteReview/@item.ID" onclick="return confirm('Are You Sure You Want To Delete This Review?')" role="button"><img src="/Content/Admin/images/admin/delete.png" alt="delete-icon"></a>
                                                 </div>
                                             </div>
                                         </div>
                                     }
-                                }
+                                </div>
                             }
-                        </div>
-
+                        }
                     </div>
                 </div>
 

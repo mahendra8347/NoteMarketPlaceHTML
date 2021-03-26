@@ -65,7 +65,7 @@
                                         <td class="title-col"><a href="/Home/NoteDetail/@item.SellerNote.ID">@item.SellerNote.Title</a></td>
                                         <td>@item.Category.Name</td>
                                         <td>@item.SellerNote.AdminRemarks</td>
-                                        <td>@item.SellerNote.ModifiedDate</td>
+                                        <td>@item.SellerNote.ModifiedDate.Value.ToString("dd MMM yyyy,HH:mm:ss")</td>
                                         <td class="text-right"><a href="/User/CloneNote/@item.SellerNote.ID" class="title-col">Clone</a></td>
                                         <td class="text-right">
                                             <div class="dropdown sold-notes-menu">
@@ -97,7 +97,7 @@
                        sortBy = Request.QueryString["sortBy"]
 
                    })
-                 , new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true }
+                 , new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true, MaximumPageNumbersToDisplay = 5 }
                  )
                     </div>
                 </div>

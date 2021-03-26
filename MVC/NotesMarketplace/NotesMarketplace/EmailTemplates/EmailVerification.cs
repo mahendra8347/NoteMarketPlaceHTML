@@ -10,11 +10,11 @@ namespace NotesMarketplace.EmailTemplates
 {
     public class EmailVerification
     {
-        public static void SendVerificationLinkEmail(User objUser, string activationlink)
+        public static void SendVerificationLinkEmail(string supportEmail, string emailPassword, User objUser, string activationlink)
         {
-            var fromEmail = new MailAddress("parmarmahendra10999@gmail.com", "Notes Marketplace"); //need system email
+            var fromEmail = new MailAddress(supportEmail, "Notes Marketplace"); //need system email
             var toEmail = new MailAddress(objUser.EmailID);
-            var fromEmailPassword = "Mi@2021&"; // Replace with actual password
+            var fromEmailPassword = emailPassword; // Replace with actual password
             string subject = "Note Marketplace - Email Verification";
             string body = "Hello " + objUser.FirstName + " " + objUser.LastName+"<br/>";
             body += "<br/>Thank you for signing up with us.Please click on below link to verify your email address and to do login.<br/>";

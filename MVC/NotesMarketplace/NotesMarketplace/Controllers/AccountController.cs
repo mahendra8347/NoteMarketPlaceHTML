@@ -40,7 +40,7 @@ namespace NotesMarketplace.Controllers
                 //Encrypt Password and Save
                 var newPassword = EncryptPassword.EncryptPasswordMd5(user.Password);
 
-                bool isValid = objNoteMarketplaceEntities.Users.Any(x => x.EmailID == user.EmailID && x.Password == newPassword);
+                bool isValid = objNoteMarketplaceEntities.Users.Any(x => x.EmailID == user.EmailID && x.Password == newPassword && x.IsActive == true);
                 if (isValid)
                 {
                     User userDetails = objNoteMarketplaceEntities.Users.Where(x => x.EmailID == user.EmailID && x.Password == newPassword).FirstOrDefault();
@@ -48,9 +48,23 @@ namespace NotesMarketplace.Controllers
                     {
                         FormsAuthentication.SetAuthCookie(user.EmailID, user.RememberMe);
 
-                        if (userDetails.RoleID == objNoteMarketplaceEntities.UserRoles.Where(x => x.Name.ToLower() == "admin").Select(x => x.ID).FirstOrDefault())
+                        if (userDetails.RoleID == objNoteMarketplaceEntities.UserRoles.Where(x => x.Name.ToLower() == "admin" && x.IsActive == true).Select(x => x.ID).FirstOrDefault())
                         {
-                            return RedirectToAction("Index", "Admin");
+                            UserProfile userprofile = objNoteMarketplaceEntities.UserProfiles.Where(x => x.UserID == userDetails.ID).FirstOrDefault();
+                            if (userprofile != null)
+                            {
+                                return RedirectToAction("Index", "Admin");
+                            }
+                            return RedirectToAction("MyProfile", "Admin");
+                        }
+                        else if (userDetails.RoleID == objNoteMarketplaceEntities.UserRoles.Where(x => x.Name.ToLower() == "superadmin" && x.IsActive == true).Select(x => x.ID).FirstOrDefault())
+                        {
+                            UserProfile userprofile = objNoteMarketplaceEntities.UserProfiles.Where(x => x.UserID == userDetails.ID).FirstOrDefault();
+                            if (userprofile != null)
+                            {
+                                return RedirectToAction("Index", "Admin");
+                            }
+                            return RedirectToAction("MyProfile", "Admin");
                         }
                         else
                         {
@@ -116,8 +130,11 @@ namespace NotesMarketplace.Controllers
                 var verifyUrl = "/Account/VerifyAccount/?VerificationCode=" + activationCode;
                 var activationlink = Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, verifyUrl);
 
+                var SupportEmailAddress = objNoteMarketplaceEntities.SystemConfigurations.Where(x => x.Key.ToLower() == "supportemailaddress").Select(y => y.Value).FirstOrDefault();
+                var EmailPassword = objNoteMarketplaceEntities.SystemConfigurations.Where(x => x.Key.ToLower() == "emailpassword").Select(y => y.Value).FirstOrDefault();
+
                 // Sending Email
-                EmailVerification.SendVerificationLinkEmail(obj, activationlink);
+                EmailVerification.SendVerificationLinkEmail(SupportEmailAddress, EmailPassword, obj, activationlink);
 
 
                 //Redirect To VerifyEmail Page
@@ -141,16 +158,17 @@ namespace NotesMarketplace.Controllers
                 if (v != null)
                 {
                     v.IsEmailVerified = true;
+                    v.IsActive = true;
                     dc.SaveChanges();
+                    @TempData["Message"] = "Your Email Is Verified You Can Login Here";
+                    return RedirectToAction("Login", "Account");
                 }
                 else
                 {
-                    ViewBag.Message = "Invalid Request";
+                    @TempData["Error"] = "Invalid Request";
+                    return RedirectToAction("Login", "Account");
                 }
             }
-
-            @TempData["Message"] = "Your Email Is Verified You Can Login Here";
-            return RedirectToAction("Login", "Account");
         }
 
 
@@ -187,8 +205,11 @@ namespace NotesMarketplace.Controllers
                     userDetails.Password = EncryptPassword.EncryptPasswordMd5(strotp);
                     objNoteMarketplaceEntities.SaveChanges();
 
+                    var SupportEmailAddress = objNoteMarketplaceEntities.SystemConfigurations.Where(x => x.Key.ToLower() == "supportemailaddress").Select(y => y.Value).FirstOrDefault();
+                    var EmailPassword = objNoteMarketplaceEntities.SystemConfigurations.Where(x => x.Key.ToLower() == "emailpassword").Select(y => y.Value).FirstOrDefault();
+
                     //Sent Otp On email address
-                    ForgotPasswordEmail.SendOtpToEmail(userDetails, otp);
+                    ForgotPasswordEmail.SendOtpToEmail(SupportEmailAddress, EmailPassword, userDetails, otp);
 
                     TempData["Message"] = "Otp Sent To Your Registered EmailAddress use it for login";
                     return RedirectToAction("Login", "Account");
@@ -253,6 +274,7 @@ namespace NotesMarketplace.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
+            Session.Abandon();
             return RedirectToAction("Login");
         }
 

@@ -93,6 +93,13 @@ li.nav-item {
     border-bottom: 3px solid #6255a5;
 }
 
+.dropdown-profile.active {
+    border-bottom: 3px solid #6255a5;
+}
+
+.dropdown-navbar.active {
+    border-bottom: 3px solid #6255a5;
+}
 /*==================================================
             Submenu of Profile
 ==================================================*/

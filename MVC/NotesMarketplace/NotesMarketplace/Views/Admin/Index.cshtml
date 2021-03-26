@@ -14,7 +14,28 @@
     <div class="admin-dashboard">
         <div class="User-Dashboard">
             <div class="row dashboard-1">
-
+                @if (@TempData["ProfileNotFound"] != null)
+                {
+                    <div class="col-md-12">
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>@TempData["ProfileNotFound"]!</strong> has not created his/her profile yet.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+                <div class="col-md-12">
+                    @if (TempData["success"] != null)
+                    {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>@TempData["success"] !</strong> @TempData["message"]
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    }
+                </div>
                 <div class="col-md-6 col-sm-6 col-xs-6
                                     text-left">
                     <h3>Dashboard</h3>
@@ -26,19 +47,19 @@
 
                     <div style="flex-grow: 3" id="dash-admin-1">
                         <div>
-                            <a href="notes-under-review.html"><h6>20</h6></a>
+                            <a href="/Admin/NotesUnderReview"><h6>@ViewBag.TotalInReviewNotes</h6></a>
                             <span>Number of Notes in Review for<br> Publish</span>
                         </div>
                     </div>
                     <div style="flex-grow: 3">
                         <div>
-                            <a href="downloaded-notes.html"><h6>103</h6></a>
+                            <a href="/Admin/DownloadedNotes"><h6>@ViewBag.LastDownloads</h6></a>
                             <span>Number of New Notes Downloaded <br>(Last 7 days)</span>
                         </div>
                     </div>
                     <div style="flex-grow: 3" id="dash-admin-3">
                         <div>
-                            <a href="members-page.html"><h6>223</h6></a>
+                            <a href="/AdminMember/MemberList"><h6>@ViewBag.Newregistration</h6></a>
                             <span>Number of New Registrations <br>(Last 7 days)</span>
                         </div>
                     </div>
@@ -54,35 +75,28 @@
                     </div>
                     <div class="col-md-9 search-label">
                         <div class="progress-note-btn">
-                            <div class="row">
-                                <div class="col-md-9 text-right">
-                                    <div>
-                                        @using (Html.BeginForm("Index", "Admin", FormMethod.Get))
-                                        {
+                            @using (Html.BeginForm("Index", "Admin", FormMethod.Get, new { id = "AllSeachNote" }))
+                            {
+                                <div class="row">
+                                    <div class="col-md-9 text-right">
+                                        <div>
+
                                             <input type="text" name="searchPublished" id="search-enter-progress" placeholder="Search" title="Type
                                                             in a name">
                                             <a href=""><button type="submit">Search</button></a>
-                                        }
+
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="select-month">
-                                        <div class="form-group">
-                                            <select class="form-control" id="exampleFormControlSelect2">
-                                                <option>
-                                                    Select
-                                                    month
-                                                </option>
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
-                                            </select>
+                                    <div class="col-md-3">
+                                        <div class="select-month">
+                                            <div class="form-group">
+                                                @Html.DropDownList("SelectMonth", (SelectList)ViewBag.SelectMonth, "--Select Month--", new { id = "SelectMonth", name = "SelectMonth", @class = "form-control", onchange = "NoteFunction();" })
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -145,13 +159,13 @@
                                             }
                                         </td>
                                         <td class="text-center">@note.UserData.FirstName @note.UserData.LastName</td>
-                                        <td class="text-center">@note.SellerNotes.PubilshedDate</td>
-                                        <td class="text-center">@note.SellerNotes.Downloads.Where(x=>x.NoteID== @note.SellerNotes.ID).Select(x=>x.ID).Count()</td>
+                                        <td class="text-center">@note.SellerNotes.PubilshedDate.Value.ToString("dd-MM-yyyy, HH:mm")</td>
+                                        <td class="text-center title-col"><a href="/Admin/DownloadedNotes?Search=@note.SellerNotes.Title">@note.SellerNotes.Downloads.Where(x => x.NoteID == @note.SellerNotes.ID && x.IsAttachementDownloaded == true && x.IsAttachementDownloaded == true).Select(x => x.ID).Count()</a></td>
                                         <td>
                                             <div class="dropdown admin-notes-menu">
                                                 <a role="button" class="dropbtn"><img src="/Content/Admin/images/Dashboard/three-dot.png" alt="delete-icon" /></a>
                                                 <div class="dropdown-content">
-                                                    <a href="/EditNote/DownloadAttechedFile/@note.SellerNotes.ID">Download Notes</a>
+                                                    <a href="/Admin/DownloadAttechedFile/@note.SellerNotes.ID">Download Notes</a>
                                                     <a href="/Admin/NoteDetail/@note.SellerNotes.ID">View More Details</a>
                                                     <a role="button" data-toggle="modal" data-target="#NoteID_@note.SellerNotes.ID">Unpublish</a>
                                                 </div>
@@ -211,8 +225,9 @@
                    {
                        PublishedNotespage,
                        searchPublished = Request.QueryString["searchPublished"],
-                       sortByForPublished = Request.QueryString["sortByForPublished"]
-                   }), new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+                       sortByForPublished = Request.QueryString["sortByForPublished"],
+                       SortMonth = Request.QueryString["SortMonth"],
+                   }), new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true, MaximumPageNumbersToDisplay = 5 })
                     </div>
                 </div>
             </div>

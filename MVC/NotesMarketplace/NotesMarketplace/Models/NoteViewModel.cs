@@ -40,6 +40,7 @@ namespace NotesMarketplace.Models
     {
         public Download DownloadNotes { get; set; }
         public User UserData { get; set; }
+        public User SellerData { get; set; }
     }
 
     public class MySoldNote

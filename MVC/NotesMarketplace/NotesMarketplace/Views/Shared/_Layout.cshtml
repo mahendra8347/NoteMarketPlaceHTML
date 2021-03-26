@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using NotesMarketplace.Healpers
+
+<!DOCTYPE html>
 <html>
 <head>
 
@@ -113,6 +115,10 @@
             document.getElementById("searchform").submit();
         }
 
+        function logoutFunction() {
+            return confirm("Are you sure you wish logout?");
+        }
+
     </script>
 
 </head>
@@ -137,42 +143,42 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ml-auto">
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/home/searchnotes">
+                                    <a class='nav-link' href="/home/searchnotes">
                                         <span class="sr-only"></span>Search
                                         Notes
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/user/index">Sell Your Notes</a>
+                                    <a class='nav-link' href="/user/index">Sell Your Notes</a>
                                 </li>
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     <li class="nav-item">
-                                        <a class="nav-link" href="/User/BuyerRequests">Buyer Requests</a>
+                                        <a class='nav-link' href="/User/BuyerRequests">Buyer Requests</a>
                                     </li>
                                 }
                                 <li class="nav-item">
-                                    <a class="nav-link" href="/home/faq">FAQ</a>
+                                    <a class='nav-link' href="/home/faq">FAQ</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="/home/contact">Contact Us</a>
+                                    <a class='nav-link' href="/home/contact">Contact Us</a>
                                 </li>
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     <li class="nav-item">
                                         <div class="dropdown-profile">
-                                            <a class="dropbtn-profile nav-link" href="#"><img src="@TempData["ProfilePicture"]" alt="customer-image"></a>
+                                            <a class='dropbtn-profile nav-link'><img src="@TempData["ProfilePicture"]" alt="customer-image"></a>
                                             @{
                                                 TempData.Keep("ProfilePicture");
                                             }
-                                            <div class="dropdown-content-profile">
-                                                <a href="/User/UserProfile/">My Profile</a>
-                                                <a href="/User/MyDownloads">My Download</a>
-                                                <a href="/User/MySoldNotes">My Sold Notes</a>
-                                                <a href="/User/MyRejectedNotes">My Rejected Notes</a>
-                                                <a href="/Account/ChangePassword/">Change Password</a>
-                                                @Html.ActionLink("Logout", "Logout", "Account")
-                                            </div>
+                                        <div class="dropdown-content-profile">
+                                            <a href="/User/UserProfile/">My Profile</a>
+                                            <a href="/User/MyDownloads">My Download</a>
+                                            <a href="/User/MySoldNotes">My Sold Notes</a>
+                                            <a href="/User/MyRejectedNotes">My Rejected Notes</a>
+                                            <a href="/Account/ChangePassword/">Change Password</a>
+                                            <a onclick="return confirm('Are you sure, you want to logout?')" href="/Account/Logout">logout</a>
+                                        </div>
                                         </div>
                                     </li>
                                 }
@@ -181,7 +187,7 @@
                             @if (User.Identity.IsAuthenticated)
                             {
                                 <div class="login-note-btn">
-                                    <button>@Html.ActionLink("Logout","Logout","Account")</button>
+                                    <button onclick="return confirm('Are you sure, you want to logout?')">@Html.ActionLink("Logout", "Logout", "Account")</button>
                                 </div>
                             }
                             else
@@ -208,9 +214,14 @@
                         </div>
                         <div id="icon-area" class="col-md-6">
                             <ul class="social-list">
-                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                                <li><a target="_blank" href="@TempData["FacebookURL"]"><i class="fa fa-facebook"></i></a></li>
+                                <li><a target="_blank" href="@TempData["TwitterURL"]"><i class="fa fa-twitter"></i></a></li>
+                                <li><a target="_blank" href="@TempData["LinkedInURL"]"><i class="fa fa-linkedin"></i></a></li>
+                                @{
+                                    TempData.Keep("FacebookURL");
+                                    TempData.Keep("TwitterURL");
+                                    TempData.Keep("LinkedInURL");
+                                }
                             </ul>
                         </div>
                     </div>

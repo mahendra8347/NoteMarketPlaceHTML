@@ -136,7 +136,8 @@ namespace NotesMarketplace.Controllers
                 }
                 else
                 {
-                    objSellerNote.DisplayPicture = "/SystemConfigurations/DefaultImages/DefaultNoteImage.jpg";
+                    SystemConfiguration systemConfiguration = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "defaultimagefornotes").FirstOrDefault();
+                    objSellerNote.DisplayPicture = systemConfiguration.Value;
                     dbobj.SaveChanges();
                 }
 
@@ -198,6 +199,8 @@ namespace NotesMarketplace.Controllers
                 dbobj.SellerNotesAttachements.Add(sellerNotesAttachement);
                 dbobj.SaveChanges();
 
+                TempData["success"] = userObj.FirstName+ " " + userObj.LastName;
+                TempData["message"] = "Note has been added";
                 return RedirectToAction("Index", "User");
             }
             ViewBag.NotesCategory = dbobj.NoteCategories.Where(x => x.IsActive == true);

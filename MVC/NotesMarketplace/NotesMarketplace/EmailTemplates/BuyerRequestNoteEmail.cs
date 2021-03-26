@@ -10,11 +10,11 @@ namespace NotesMarketplace.EmailTemplates
 {
     public class BuyerRequestNoteEmail
     {
-        public static void BuyerNotifyEmail(User objUser, User sellerRecord)
+        public static void BuyerNotifyEmail(string supportEmail, string emailPassword, User objUser, User sellerRecord)
         {
-            var fromEmail = new MailAddress("parmarmahendra10999@gmail.com", "Notes Marketplace"); //need system email
+            var fromEmail = new MailAddress(supportEmail, "Notes Marketplace"); //need system email
             var toEmail = new MailAddress(sellerRecord.EmailID);
-            var fromEmailPassword = "Mi@2021&"; // Replace with actual password
+            var fromEmailPassword = emailPassword; // Replace with actual password
             string subject = "<" + objUser.FirstName + " " + objUser.LastName + "> - wants to purchase your notes";
             string body = "Hello " + sellerRecord.FirstName + " " + sellerRecord.LastName + "<br/>";
             body += "<br/>We would like to inform you that,<b> " + objUser.FirstName + " " + objUser.LastName + "</b>" +

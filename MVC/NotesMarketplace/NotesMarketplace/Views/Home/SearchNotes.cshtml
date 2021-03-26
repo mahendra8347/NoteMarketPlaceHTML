@@ -48,14 +48,7 @@
                                             @Html.DropDownList("Country", new SelectList(ViewBag.Country, "ID", "Name"), "Select your Country", new { id = "Country", name = "Country", onchange = "searchFunction();" })
                                         </div>
                                         <div class="col-md-2 select-seatch">
-                                            <select name="Rating" onchange = "searchFunction();">
-                                                <option>Select rating</option>
-                                                <option value="1">1 Star</option>
-                                                <option value="2">2 Star</option>
-                                                <option value="3">3 Star</option>
-                                                <option value="4">4 Star</option>
-                                                <option value="5">5 Star</option>
-                                            </select>
+                                            @Html.DropDownList("Rating", new SelectList(ViewBag.Rating), "Select Rating", new { id = "Rating", name = "Rating", onchange = "searchFunction();" })
                                         </div>
                                     </div>
                                 </div>
@@ -99,9 +92,9 @@
                                     </div>
 
                                     <div class="note-details">
-                                        <p><i class="fa fa-university"></i>@item.SellerNotes.UniversityName</p>
-                                        <p><i class="fa fa-university"></i>@item.SellerNotes.NumberofPages Pages</p>
-                                        <p><i class="fa fa-university"></i>@item.SellerNotes.CreatedDate</p>
+                                        <p><i class="fa fa-university"></i>@item.SellerNotes.UniversityName, @item.Countries.Name</p>
+                                        <p><i class="fa fa-book" aria-hidden="true"></i>@item.SellerNotes.NumberofPages Pages</p>
+                                        <p><i class="fa fa-calendar" aria-hidden="true"></i>@item.SellerNotes.PubilshedDate.Value.ToString("ddd, MMM dd yyyy")</p>
                                         <p><i class="fa fa-flag"></i><span>@item.SellerNotes.SellerNotesReportedIssues.Where(x => x.NoteID == item.SellerNotes.ID).Count() Usera marked this note as inappropriate</span></p>
                                     </div>
 
@@ -157,8 +150,9 @@
                            Category = Request.QueryString["Category"],
                            NoteType = Request.QueryString["NoteType"],
                            University = Request.QueryString["University"],
-                           Course = Request.QueryString["Course"]
-                       }), new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+                           Course = Request.QueryString["Course"],
+                           Rating = Request.QueryString["Rating"],
+                       }), new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true, MaximumPageNumbersToDisplay = 5 })
 
                         </div>
                     </div>

@@ -36,6 +36,42 @@
     <link rel="stylesheet" href="~/Content/Admin/css/responsive.css">
 
     <script>
+        function fileValidation() {
+            var fileInput =
+                document.getElementById('DefaultImageForNotes');
+
+            var filePath = fileInput.value;
+
+            // Allowing file type
+            var allowedExtensions =
+                /(\.jpg)$/i;
+
+            if (!allowedExtensions.exec(filePath)) {
+                fileInput.value = '';
+                document.getElementById('DefaultImageForNotes-error').innerHTML = "Select .jpg file only";
+                document.getElementById('DefaultImageForNotes').focus;
+                return false;
+            }
+        }
+
+        function fileImgValidation() {
+            var fileInput =
+                document.getElementById('DefaultProfilePicture');
+
+            var filePath = fileInput.value;
+
+            // Allowing file type
+            var allowedExtensions =
+                /(\.jpg)$/i;
+
+            if (!allowedExtensions.exec(filePath)) {
+                fileInput.value = '';
+                document.getElementById('DefaultProfilePicture-error').innerHTML = "Select .jpg file only";
+                document.getElementById('DefaultProfilePicture').focus;
+                return false;
+            }
+        }
+
         function NoteFunction() {
             document.getElementById("AllSeachNote").submit();
         }
@@ -60,27 +96,27 @@
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ml-auto">
                                 <li class="nav-item ">
-                                    <a class="nav-link active" href="/Admin/Index">Dashboard</a>
+                                    <a class="nav-link" href="/Admin/Index">Dashboard</a>
                                 </li>
                                 <li class="nav-item">
                                     <div class="dropdown-navbar">
                                         <a class="dropbtn-navbar nav-link" href="#">Notes<span><i class="fa fa-angle-down"></i></span></a>
                                         <div class="dropdown-content-navbar">
                                             <a href="/Admin/NotesUnderReview">Notes Under Review</a>
-                                            <a href="published-notes.html">Published Notes</a>
-                                            <a href="downloaded-notes.html">Downloaded Notes</a>
-                                            <a href="rejected-notes.html">Rejected Notes</a>
+                                            <a href="/Admin/PublishedNotes">Published Notes</a>
+                                            <a href="/Admin/DownloadedNotes">Downloaded Notes</a>
+                                            <a href="/Admin/RejectedNote">Rejected Notes</a>
                                         </div>
                                     </div>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="members-page.html">Members</a>
+                                    <a class="nav-link" href="/AdminMember/MemberList">Members</a>
                                 </li>
                                 <li class="nav-item">
                                     <div class="dropdown-navbar">
                                         <a class="dropbtn-navbar nav-link" href="#">Reports<span><i class="fa fa-angle-down"></i></span></a>
                                         <div class="dropdown-content-navbar">
-                                            <a href="spam-reports.html">Spam Reports</a>
+                                            <a href="/Admin/SpamReports">Spam Reports</a>
                                         </div>
                                     </div>
                                 </li>
@@ -88,28 +124,34 @@
                                     <div class="dropdown-navbar">
                                         <a class="dropbtn-navbar nav-link" href="#">Setting<span><i class="fa fa-angle-down"></i></span></a>
                                         <div class="dropdown-content-navbar">
-                                            <a href="manage-system-configuration.html">Manage System Configuration</a>
-                                            <a href="manage-administrator.html">Manage Administrator</a>
-                                            <a href="manage-category.html">Manage Category</a>
-                                            <a href="manage-type.html">Manage Type</a>
-                                            <a href="manage-country.html">Manage Countyies</a>
+                                            @if (User.IsInRole("SuperAdmin"))
+                                            {
+                                                <a href="/Admin/ManageSystemConfiguration">Manage System Configuration</a>
+                                                <a href="/Admin/Administrators">Manage Administrator</a>
+                                            }
+                                            <a href="/Admin/ManageCategory">Manage Category</a>
+                                            <a href="/Admin/ManageType">Manage Type</a>
+                                            <a href="/Admin/Countries">Manage Countyies</a>
                                         </div>
                                     </div>
                                 </li>
                                 <li class="nav-item">
                                     <div class="dropdown-profile">
-                                        <a class="dropbtn-profile nav-link" href="#"><img src="/Content/Admin/images/homepage/testimonial/client-1.jpg" alt="customer-image"></a>
+                                        <a class="dropbtn-profile nav-link" href="#"><img src="@TempData["ProfilePicture"]" alt="customer-image"></a>
+                                        @{
+                                            TempData.Keep("ProfilePicture");
+                                        }
                                         <div class="dropdown-content-profile">
-                                            <a href="my-profile.html">Update Profile</a>
-                                            <a href="change_password.html">Change Password</a>
-                                            <a href="/Account/Logout">logout</a>
+                                            <a href="/Admin/MyProfile">Update Profile</a>
+                                            <a href="/Admin/ChangePassword">Change Password</a>
+                                            <a onclick="return confirm('Are you sure, you want to logout?')" href="/Account/Logout">logout</a>
                                         </div>
                                     </div>
                                 </li>
                             </ul>
 
                             <div class="login-note-btn">
-                                <button><a href="/Account/Logout">Logout</a></button>
+                                <button><a onclick="return confirm('Are you sure, you want to logout?')" href="/Account/Logout">Logout</a></button>
                             </div>
                         </div>
                     </div>

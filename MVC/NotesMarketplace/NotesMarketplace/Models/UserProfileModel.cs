@@ -11,11 +11,11 @@ namespace NotesMarketplace.Models
         public int ID { get; set; }
 
         [Required(ErrorMessage = "Please Enter Your First Name")]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Use letters only please")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Use letters only please")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "Please Enter Your First Name")]
-        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "Use letters only please")]
+        [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Use letters only please")]
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "Please Enter EmailID")]

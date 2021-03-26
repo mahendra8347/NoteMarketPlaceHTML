@@ -1,4 +1,6 @@
-﻿@{
+﻿
+
+@{
     Layout = null;
 }
 
@@ -198,7 +200,7 @@
                                     </div>
 
                                     <div class="work-button">
-                                        <a href="#"><button>sell book</button></a>
+                                        <a href="/user/index"><button>sell book</button></a>
                                     </div>
 
                                 </div>
@@ -382,9 +384,14 @@
                         </div>
                         <div id="icon-area" class="col-md-6">
                             <ul class="social-list">
-                                <li><a href="#"><i class="fa fa-facebook"></i></a></li>
-                                <li><a href="#"><i class="fa fa-twitter"></i></a></li>
-                                <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+                                <li><a target="_blank" href="@TempData["FacebookURL"]"><i class="fa fa-facebook"></i></a></li>
+                                <li><a target="_blank" href="@TempData["TwitterURL"]"><i class="fa fa-twitter"></i></a></li>
+                                <li><a target="_blank" href="@TempData["LinkedInURL"]"><i class="fa fa-linkedin"></i></a></li>
+                                @{
+                                    TempData.Keep("FacebookURL");
+                                    TempData.Keep("TwitterURL");
+                                    TempData.Keep("LinkedInURL");
+                                }
                             </ul>
                         </div>
                     </div>

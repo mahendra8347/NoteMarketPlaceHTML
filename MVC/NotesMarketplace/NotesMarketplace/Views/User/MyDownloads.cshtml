@@ -35,7 +35,7 @@
                                 <th scope="col">sr no.</th>
                                 <th scope="col">@Html.ActionLink("note title", "MyDownloads", new { sortBy = ViewBag.SortTitleParameter, Searchkeyword = Request.QueryString["Searchkeyword"] })</th>
                                 <th scope="col">@Html.ActionLink("Category", "MyDownloads", new { sortBy = ViewBag.SortCategoryParameter, Searchkeyword = Request.QueryString["Searchkeyword"] })</th>
-                                <th scope="col">buyer</th>
+                                <th scope="col">seller</th>
                                 <th scope="col">@Html.ActionLink("sell type", "MyDownloads", new { sortBy = ViewBag.SortSellTypeParameter, Searchkeyword = Request.QueryString["Searchkeyword"] })</th>
                                 <th scope="col">@Html.ActionLink("Price", "MyDownloads", new { sortBy = ViewBag.SortPriceParameter, Searchkeyword = Request.QueryString["Searchkeyword"] })</th>
                                 <th scope="col">@Html.ActionLink("Downloaded date/time", "MyDownloads", new { sortBy = ViewBag.SortCreatedDateParameter, Searchkeyword = Request.QueryString["Searchkeyword"] })</th>
@@ -59,7 +59,7 @@
                                         <td>@(Counter + ((Model.PageNumber - 1) * Model.PageSize) + 1)</td>
                                         <td class="title-col"><a href="/Home/NoteDetail/@item.DownloadNotes.NoteID">@item.DownloadNotes.NoteTitle</a></td>
                                         <td>@item.DownloadNotes.NoteCategory</td>
-                                        <td>@item.UserData.EmailID</td>
+                                        <td>@item.SellerData.EmailID</td>
                                         <td>
                                             @if (item.DownloadNotes.IsPaid == false)
                                             {
@@ -80,13 +80,22 @@
                                                 <text>$@item.DownloadNotes.PurchasedPrice</text>
                                             }
                                         </td>
-                                        <td>@item.DownloadNotes.CreatedDate</td>
+                                        <td>
+                                            @if (@item.DownloadNotes.AttacmentDownloadedDate != null)
+                                            {
+                                                @item.DownloadNotes.AttacmentDownloadedDate.Value.ToString("dd MMM yyyy,HH:mm:ss")
+                                            }
+                                            else
+                                            {
+                                                <text>N/A</text>
+                                            }
+                                        </td>
                                         <td>
                                             <a href="/Home/NoteDetail/@item.DownloadNotes.NoteID"><img src="/Content/Front/images/Dashboard/eye.png" class="edit-action" alt="edit-icon" /></a>
                                             <div class="dropdown my-download">
                                                 <a class="dropbtn"><img src="/Content/Front/images/Dashboard/three-dot.png" alt="delete-icon" /></a>
                                                 <div class="dropdown-content">
-                                                    <a href="/EditNote/DownloadAttechedFile/@item.DownloadNotes.NoteID">Download Note</a>
+                                                    <a href="/User/DownloadAttechedFile/@item.DownloadNotes.ID">Download Note</a>
                                                     <a role="button" data-toggle="modal" data-target="#Review_@item.DownloadNotes.ID">Add Reviews/Feedback</a>
                                                     <a role="button" data-toggle="modal" data-target="#DownloadID_@item.DownloadNotes.ID">Report as inapproprite</a>
                                                 </div>
@@ -131,7 +140,7 @@
                                                                                     Comments *
                                                                                 </h6>
                                                                             </div>
-                                                                            <textarea name="Remarks" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="comments..."></textarea>
+                                                                            <textarea name="Remarks" class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="comments..." required></textarea>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -207,7 +216,7 @@
                        sortBy = Request.QueryString["sortBy"]
 
                    })
-                 , new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true }
+                 , new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true, MaximumPageNumbersToDisplay = 5 }
                  )
                     </div>
                 </div>

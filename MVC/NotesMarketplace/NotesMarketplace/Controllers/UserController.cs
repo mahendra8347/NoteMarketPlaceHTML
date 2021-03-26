@@ -11,10 +11,12 @@ using System.Net;
 using System.Data.Entity;
 using NotesMarketplace.EmailTemplates;
 using System.IO;
+using NotesMarketplace.Healpers;
+using System.IO.Compression;
 
 namespace NotesMarketplace.Controllers
 {
-    [Authorize]
+    [Authorize(Roles ="Member")]
     [RoutePrefix("User")]
     public class UserController : Controller
     {
@@ -27,6 +29,17 @@ namespace NotesMarketplace.Controllers
             var Emailid = User.Identity.Name.ToString();
             User user = dbobj.Users.Where(x => x.EmailID == Emailid).FirstOrDefault();
 
+            var Records = dbobj.SystemConfigurations.Count();
+            if (Records > 0)
+            {
+                TempData["FacebookURL"] = dbobj.SystemConfigurations.Where(x => x.Key == "FacebookURL").Select(x => x.Value).FirstOrDefault();
+                TempData["LinkedInURL"] = dbobj.SystemConfigurations.Where(x => x.Key == "LinkedinURL").Select(x => x.Value).FirstOrDefault();
+                TempData["TwitterURL"] = dbobj.SystemConfigurations.Where(x => x.Key == "TwitterURL").Select(x => x.Value).FirstOrDefault();
+                TempData.Keep("FacebookURL");
+                TempData.Keep("LinkedInURL");
+                TempData.Keep("TwitterURL");
+            }
+
             if (User.Identity.IsAuthenticated)
             {
                 UserProfile Profilepic = dbobj.UserProfiles.Where(x => x.UserID == user.ID).FirstOrDefault();
@@ -36,7 +49,8 @@ namespace NotesMarketplace.Controllers
                 }
                 else
                 {
-                    TempData["ProfilePicture"] = Path.Combine("/SystemConfigurations/DefaultImages/", "DefaultUserImage.jpg");
+                    SystemConfiguration systemConfiguration = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "defaultprofilepicture").FirstOrDefault();
+                    TempData["ProfilePicture"] = systemConfiguration.Value;
                 }
             }
 
@@ -142,7 +156,8 @@ namespace NotesMarketplace.Controllers
                     }
                     else
                     {
-                        userProfileObj.ProfilePicture = "/SystemConfigurations/DefaultImages/DefaultUserImage.jpg";
+                        SystemConfiguration systemConfiguration = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "defaultprofilepicture").FirstOrDefault();
+                        userProfileObj.ProfilePicture = systemConfiguration.Value;
                         dbobj.SaveChanges();
                     }
 
@@ -196,7 +211,8 @@ namespace NotesMarketplace.Controllers
                     }
                     else
                     {
-                        userProfileObj.ProfilePicture = "/SystemConfigurations/DefaultImages/DefaultMemberImage.jpg";
+                        SystemConfiguration systemConfiguration = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "defaultprofilepicture").FirstOrDefault();
+                        userProfileObj.ProfilePicture = systemConfiguration.Value;
                         dbobj.SaveChanges();
                     }
 
@@ -249,7 +265,7 @@ namespace NotesMarketplace.Controllers
             ViewBag.SortCategoryParameter = sortByForProgress == "Category" ? "Category desc" : "Category";
             ViewBag.SortStatusParameter = sortByForProgress == "Status" ? "Status desc" : "Status";
 
-            List<SellerNote> sellerNotes = dbobj.SellerNotes.OrderByDescending(x => x.CreatedDate).Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(searchInProgress) || searchInProgress == null)).ToList();
+            List<SellerNote> sellerNotes = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(searchInProgress) || x.NoteCategory.Name.Contains(searchInProgress) || searchInProgress == null)).ToList();
             List<NoteCategory> noteCategories = dbobj.NoteCategories.ToList();
             List<ReferenceData> referenceDatas = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value != "Rejected" && x.Value != "Removed").ToList();
 
@@ -304,7 +320,7 @@ namespace NotesMarketplace.Controllers
             ViewBag.SortPriceParameterPublish = sortByForPublished == "Price" ? "Price desc" : "Price";
 
 
-            List<SellerNote> sellerNotesPublished = dbobj.SellerNotes.OrderByDescending(x => x.CreatedDate).Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(searchPublished) || searchPublished == null)).ToList();
+            List<SellerNote> sellerNotesPublished = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(searchPublished) || x.NoteCategory.Name.Contains(searchPublished) || x.SellingPrice.ToString().StartsWith(searchPublished) || searchPublished == null)).ToList();
             List<NoteCategory> noteCategoriesPublished = dbobj.NoteCategories.ToList();
             List<ReferenceData> referenceDatasPublished = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value != "Rejected" && x.Value != "Removed").ToList();
 
@@ -366,12 +382,20 @@ namespace NotesMarketplace.Controllers
             var EmailID = User.Identity.Name.ToString();
             User userObj = dbobj.Users.Where(x => x.EmailID == EmailID).FirstOrDefault();
 
+            UserProfile userProfile = dbobj.UserProfiles.Where(x => x.UserID == userObj.ID).FirstOrDefault();
+
+            if (userProfile == null)
+            {
+                return RedirectToAction("UserProfile", "User");
+            }
+
             ViewBag.SortCreatedDateParameter = string.IsNullOrEmpty(sortBy) ? "CreatedDate asc" : "";
             ViewBag.SortTitleParameter = sortBy == "Title" ? "Title desc" : "Title";
             ViewBag.SortCategoryParameter = sortBy == "Category" ? "Category desc" : "Category";
             ViewBag.SortPriceParameter = sortBy == "Price" ? "Price desc" : "Price";
 
-            List<Download> DownloadNotes = dbobj.Downloads.Where(x => x.Seller == userObj.ID && x.IsSellerHasAllowedDownload == false && x.IsPaid == true && (x.NoteTitle.Contains(Searchkeyword) || x.NoteCategory.Contains(Searchkeyword) || x.PurchasedPrice.ToString().StartsWith(Searchkeyword) || Searchkeyword == null)).ToList();
+            List<Download> DownloadNotes = dbobj.Downloads.Where(x => (x.Seller == userObj.ID && x.IsSellerHasAllowedDownload == false && x.IsPaid == true)
+            && (x.NoteTitle.Contains(Searchkeyword) || x.NoteCategory.Contains(Searchkeyword) || x.PurchasedPrice.ToString().StartsWith(Searchkeyword) || x.User1.EmailID.Contains(Searchkeyword) || x.User1.UserProfiles.All(y=>y.PhoneNumber.Contains(Searchkeyword)) || Searchkeyword == null)).ToList();
             List<User> UserData = dbobj.Users.ToList();
             List<UserProfile> UserProfileData = dbobj.UserProfiles.ToList();
 
@@ -431,23 +455,37 @@ namespace NotesMarketplace.Controllers
             User sellerUser = dbobj.Users.Find(allowdownload.Seller);
             User buyerUser = dbobj.Users.Find(allowdownload.Downloader);
 
-            if (allowdownload == null)
+            bool internet = CheckInternet.IsConnectedToInternet();
+            if (internet == true)
             {
-                return HttpNotFound();
+
+                if (allowdownload == null)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+
+                SellerNotesAttachement sellerNotesAttachement = dbobj.SellerNotesAttachements.Where(x => x.NoteID == allowdownload.NoteID).FirstOrDefault();
+
+                allowdownload.IsSellerHasAllowedDownload = true;
+                allowdownload.AttachmentPath = sellerNotesAttachement.FilePath;
+                allowdownload.CreatedDate = DateTime.Now;
+                allowdownload.ModifiedDate = DateTime.Now;
+                allowdownload.ModifiedBy = allowdownload.Seller;
+
+                dbobj.Entry(allowdownload).State = EntityState.Modified;
+                dbobj.SaveChanges();
+
+                var SupportEmailAddress = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "supportemailaddress").Select(y => y.Value).FirstOrDefault();
+                var EmailPassword = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "emailpassword").Select(y => y.Value).FirstOrDefault();
+
+                DownloadAllowedEmail.DoenloadAllowedNotifyEmail(SupportEmailAddress, EmailPassword, buyerUser, sellerUser);
+
             }
-
-            SellerNotesAttachement sellerNotesAttachement = dbobj.SellerNotesAttachements.Where(x => x.NoteID == allowdownload.NoteID).FirstOrDefault();
-
-            allowdownload.IsSellerHasAllowedDownload = true;
-            allowdownload.AttachmentPath = sellerNotesAttachement.FilePath;
-            allowdownload.CreatedDate = DateTime.Now;
-            allowdownload.ModifiedDate = DateTime.Now;
-            allowdownload.ModifiedBy = allowdownload.Seller;
-
-            dbobj.Entry(allowdownload).State = EntityState.Modified;
-            dbobj.SaveChanges();
-
-            DownloadAllowedEmail.DoenloadAllowedNotifyEmail(buyerUser, sellerUser);
+            else
+            {
+                TempData["internetnotconnected"] = sellerUser.FirstName + " " + sellerUser.LastName;
+                return RedirectToAction("Index", "User");
+            }
 
             return RedirectToAction("BuyerRequests", "User");
         }
@@ -464,16 +502,20 @@ namespace NotesMarketplace.Controllers
             ViewBag.SortSellTypeParameter = sortBy == "SellType" ? "SellType desc" : "SellType";
             ViewBag.SortPriceParameter = sortBy == "Price" ? "Price desc" : "Price";
 
-            List<Download> DownloadNotes = dbobj.Downloads.Where(x => x.Downloader == userObj.ID && x.IsSellerHasAllowedDownload == true && x.AttachmentPath != "" && (x.NoteTitle.Contains(Searchkeyword) || x.NoteCategory.Contains(Searchkeyword) || x.PurchasedPrice.ToString().StartsWith(Searchkeyword) || Searchkeyword == null)).ToList();
+            List<Download> DownloadNotes = dbobj.Downloads.Where(x => x.Downloader == userObj.ID && x.IsSellerHasAllowedDownload == true && x.AttachmentPath != "" && (x.NoteTitle.Contains(Searchkeyword) || x.NoteCategory.Contains(Searchkeyword) || x.PurchasedPrice.ToString().StartsWith(Searchkeyword) || x.User2.EmailID.Contains(Searchkeyword) || Searchkeyword == null)).ToList();
             List<User> UserData = dbobj.Users.ToList();
+            List<User> SellerData = dbobj.Users.ToList();
 
             var buyerRequestNotes = (from downloadnotes in DownloadNotes
                                      join userdata in UserData on downloadnotes.Downloader equals userdata.ID into table1
                                      from userdata in table1.ToList().DefaultIfEmpty()
+                                     join sellerdata in SellerData on downloadnotes.Seller equals sellerdata.ID into table2
+                                     from sellerdata in table2.ToList().DefaultIfEmpty()
                                      select new MyDownloads
                                      {
                                          DownloadNotes = downloadnotes,
                                          UserData = userdata,
+                                         SellerData = sellerdata
                                      }).AsQueryable();
 
             switch (sortBy)
@@ -525,7 +567,7 @@ namespace NotesMarketplace.Controllers
             ViewBag.SortSellTypeParameter = sortBy == "SellType" ? "SellType desc" : "SellType";
             ViewBag.SortPriceParameter = sortBy == "Price" ? "Price desc" : "Price";
 
-            List<Download> DownloadNotes = dbobj.Downloads.Where(x => x.Seller == userObj.ID && x.IsSellerHasAllowedDownload == true && x.AttachmentPath != "" && (x.NoteTitle.Contains(Searchkeyword) || x.NoteCategory.Contains(Searchkeyword) || x.PurchasedPrice.ToString().StartsWith(Searchkeyword) || Searchkeyword == null)).ToList();
+            List<Download> DownloadNotes = dbobj.Downloads.Where(x => x.Seller == userObj.ID && x.IsSellerHasAllowedDownload == true && x.AttachmentPath != "" && (x.NoteTitle.Contains(Searchkeyword) || x.NoteCategory.Contains(Searchkeyword) || x.PurchasedPrice.ToString().StartsWith(Searchkeyword) || x.User.EmailID.Contains(Searchkeyword) || Searchkeyword == null)).ToList();
             List<User> UserData = dbobj.Users.ToList();
 
             var buyerRequestNotes = (from downloadnotes in DownloadNotes
@@ -591,37 +633,52 @@ namespace NotesMarketplace.Controllers
 
             if (downloadrecord == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             SellerNote sellerNote = dbobj.SellerNotes.Find(downloadrecord.NoteID);
             if (sellerNote == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             User sellerUser = dbobj.Users.Find(sellerNote.SellerID);
             if (sellerUser == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
-            SellerNotesReportedIssue sellerNotesReportedIssue = new SellerNotesReportedIssue
+            bool internet = CheckInternet.IsConnectedToInternet();
+            if (internet == true)
             {
-                NoteID = downloadrecord.NoteID,
-                ReportedByID = userObj.ID,
-                AgainstDownloadID = downloadrecord.ID,
-                Remarks = remark.Remarks,
-                CreatedDate = DateTime.Now,
-                CreatedBy = userObj.ID,
-                ModifiedDate = DateTime.Now,
-                ModifiedBy = userObj.ID
-            };
 
-            dbobj.SellerNotesReportedIssues.Add(sellerNotesReportedIssue);
-            dbobj.SaveChanges();
+                SellerNotesReportedIssue sellerNotesReportedIssue = new SellerNotesReportedIssue
+                {
+                    NoteID = downloadrecord.NoteID,
+                    ReportedByID = userObj.ID,
+                    AgainstDownloadID = downloadrecord.ID,
+                    Remarks = remark.Remarks,
+                    CreatedDate = DateTime.Now,
+                    CreatedBy = userObj.ID,
+                    ModifiedDate = DateTime.Now,
+                    ModifiedBy = userObj.ID
+                };
 
-            ReportedSpamEmail.BuyerReportebSpamNotifyEmail(sellerUser, userObj, sellerNote.Title);
+                dbobj.SellerNotesReportedIssues.Add(sellerNotesReportedIssue);
+                dbobj.SaveChanges();
+
+                var SupportEmailAddress = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "supportemailaddress").Select(y => y.Value).FirstOrDefault();
+                var EmailPassword = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "emailpassword").Select(y => y.Value).FirstOrDefault();
+
+                var emails = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "emailaddress").Select(x => x.Value).FirstOrDefault();
+
+                ReportedSpamEmail.BuyerReportebSpamNotifyEmail(SupportEmailAddress, EmailPassword, sellerUser, userObj, sellerNote.Title,emails);
+            }
+            else
+            {
+                TempData["internetnotconnected"] = sellerUser.FirstName + " " + sellerUser.LastName;
+                return RedirectToAction("Index", "User");
+            }
 
             return RedirectToAction("MyDownloads", "User");
         }
@@ -642,7 +699,7 @@ namespace NotesMarketplace.Controllers
 
             if (downloadrecord == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             SellerNotesReview sellerNotesReview = new SellerNotesReview
@@ -677,7 +734,7 @@ namespace NotesMarketplace.Controllers
 
             var Status = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value == "Rejected" && x.IsActive == true).Select(x => x.ID).FirstOrDefault();
 
-            List<SellerNote> sellerNotesPublished = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.Status == Status && x.IsActive == true && (x.Title.Contains(Searchkeyword) || Searchkeyword == null)).ToList();
+            List<SellerNote> sellerNotesPublished = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.Status == Status && x.IsActive == true && (x.Title.Contains(Searchkeyword) || x.NoteCategory.Name.Contains(Searchkeyword) ||x.AdminRemarks.Contains(Searchkeyword) || Searchkeyword == null)).ToList();
             List<NoteCategory> noteCategoriesPublished = dbobj.NoteCategories.ToList();
 
             var MyRejectedNotes = (from sell in sellerNotesPublished
@@ -729,18 +786,56 @@ namespace NotesMarketplace.Controllers
 
             if (sellerNote == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             var Status = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value.ToLower() == "draft" && x.IsActive == true).Select(x => x.ID).FirstOrDefault();
 
             sellerNote.Status = Status;
+            sellerNote.AdminRemarks = null;
             sellerNote.CreatedDate = DateTime.Now;
             sellerNote.ModifiedDate = DateTime.Now;
             dbobj.Entry(sellerNote).State = EntityState.Modified;
             dbobj.SaveChanges();
 
             return RedirectToAction("Index", "User");
+        }
+
+        public ActionResult DownloadAttechedFile(int? id)
+        {
+
+            Download download = dbobj.Downloads.Find(id);
+
+            download.IsAttachementDownloaded = true;
+            download.AttacmentDownloadedDate = DateTime.Now;
+            download.ModifiedDate = DateTime.Now;
+
+            dbobj.Entry(download).State = EntityState.Modified;
+            dbobj.SaveChanges();
+
+            SellerNotesAttachement attechment = dbobj.SellerNotesAttachements.Where(x => x.NoteID == download.NoteID).FirstOrDefault();
+
+            var allFilesPath = attechment.FilePath.Split(';');
+            using (var memoryStream = new MemoryStream())
+            {
+                using (var ziparchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+                {
+                    foreach (var FilePath in allFilesPath)
+                    {
+                        string FullPath = Path.Combine(Server.MapPath("~" + FilePath));
+                        string FileName = Path.GetFileName(FullPath);
+                        if (FileName == "")
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            ziparchive.CreateEntryFromFile(FullPath, FileName);
+                        }
+                    }
+                }
+                return File(memoryStream.ToArray(), "application/zip", "Attachments.zip");
+            }
         }
     }
 }

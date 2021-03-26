@@ -80,7 +80,7 @@
                                                 <text>$@item.DownloadNotes.PurchasedPrice</text>
                                             }
                                         </td>
-                                        <td>@item.DownloadNotes.CreatedDate</td>
+                                        <td>@item.DownloadNotes.CreatedDate.Value.ToString("dd MMM yyyy,HH:mm:ss")</td>
                                         <td>
                                             <a href="/Home/NoteDetail/@item.DownloadNotes.NoteID"><img src="/Content/Front/images/Dashboard/eye.png" class="edit-action" alt="edit-icon" /></a>
                                             <div class="dropdown sold-notes-menu">
@@ -112,7 +112,7 @@
                        sortBy = Request.QueryString["sortBy"]
 
                    })
-                 , new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true }
+                 , new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true, MaximumPageNumbersToDisplay = 5 }
                  )
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 ﻿using NotesMarketplace.EmailTemplates;
+using NotesMarketplace.Healpers;
 using NotesMarketplace.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using System.Web.Mvc;
 
 namespace NotesMarketplace.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Member")]
     [RoutePrefix("EditNote")]
     public class EditNoteController : Controller
     {
@@ -49,7 +50,7 @@ namespace NotesMarketplace.Controllers
 
             if (sellerNote == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             ViewBag.NotePriview = sellerNote.NotesPreview;
@@ -64,10 +65,19 @@ namespace NotesMarketplace.Controllers
         [Route("EditNote/{id}")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult EditNote(int? id, AddNote note, string submit)
+        public ActionResult EditNote(AddNote note, string submit)
         {
             if (ModelState.IsValid)
             {
+                if (submit == "Publish")
+                {
+                    bool internet = CheckInternet.IsConnectedToInternet();
+                    if (internet != true)
+                    {
+                        TempData["internetnotconnected"] = "User";
+                        return RedirectToAction("Index", "User");
+                    }
+                }
 
                 //Check UploadNote Is Selected Or Not
                 if (note.UploadNotes[0] == null)
@@ -118,8 +128,11 @@ namespace NotesMarketplace.Controllers
                 {
                     noteDataValue = "Submitted For Review";
 
+                    var SupportEmailAddress = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "supportemailaddress").Select(y => y.Value).FirstOrDefault();
+                    var EmailPassword = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "emailpassword").Select(y => y.Value).FirstOrDefault();
+                    var emails = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "emailaddress").Select(x => x.Value).FirstOrDefault();
                     //Notify Admin If Seller Publish The Book
-                    SellerPublishedNoteEmail.SellerPublishedNoteNotifyEmail(userObj, note.Title);
+                    SellerPublishedNoteEmail.SellerPublishedNoteNotifyEmail(SupportEmailAddress, EmailPassword, userObj, note.Title,emails);
                 }
                 else if (submit == "Save")
                 {
@@ -190,7 +203,8 @@ namespace NotesMarketplace.Controllers
                 }
                 else
                 {
-                    objSellerNote.DisplayPicture = "/SystemConfigurations/DefaultImages/DefaultNoteImage.jpg";
+                    SystemConfiguration systemConfiguration = dbobj.SystemConfigurations.Where(x => x.Key.ToLower() == "defaultimagefornotes").FirstOrDefault();
+                    objSellerNote.DisplayPicture = systemConfiguration.Value;
                     dbobj.SaveChanges();
                 }
 
@@ -249,6 +263,8 @@ namespace NotesMarketplace.Controllers
                 dbobj.Entry(sellerNotesAttachement).State = EntityState.Modified;
                 dbobj.SaveChanges();
 
+                TempData["success"] = userObj.FirstName + " " + userObj.LastName;
+                TempData["message"] = "Note has been edited";
                 return RedirectToAction("Index", "User");
             }
             ViewBag.Country = new SelectList(dbobj.Countries.Where(x => x.IsActive == true), "ID", "Name", note.Country);

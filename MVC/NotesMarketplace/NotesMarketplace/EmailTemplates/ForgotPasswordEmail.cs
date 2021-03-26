@@ -10,11 +10,11 @@ namespace NotesMarketplace.EmailTemplates
 {
     public class ForgotPasswordEmail
     {
-        public static void SendOtpToEmail(User objUser, int otp)
+        public static void SendOtpToEmail(string supportEmail, string emailPassword, User objUser, int otp)
         {
-            var fromEmail = new MailAddress("parmarmahendra10999@gmail.com", "Notes Marketplace"); //need system email
+            var fromEmail = new MailAddress(supportEmail, "Notes Marketplace"); //need system email
             var toEmail = new MailAddress(objUser.EmailID);
-            var fromEmailPassword = "Mi@2021&"; // Replace with actual password
+            var fromEmailPassword = emailPassword; // Replace with actual password
             string subject = "New Temporary Password has been created for you";
             string body = "Hello " + objUser.FirstName + " " + objUser.LastName + "<br/>";
             body += "We have generated a new password for you <br/>"; 

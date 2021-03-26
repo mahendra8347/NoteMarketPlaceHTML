@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace NotesMarketplace.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Member")]
     [RoutePrefix("DeleteNote")]
     public class DeleteNoteController : Controller
     {
@@ -26,7 +26,7 @@ namespace NotesMarketplace.Controllers
             SellerNote sellerNote = dbobj.SellerNotes.Find(id);
             if (sellerNote == null)
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             var EmailID = User.Identity.Name.ToString();

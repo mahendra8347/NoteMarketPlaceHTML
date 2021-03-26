@@ -43,15 +43,39 @@
                             </div>
                             <div class="d-flex">
                                 <span class="col-md-6 title">DOB</span>
-                                <div class="col-md-6 title-velue">@ViewBag.userProfileObj.DOB</div>
+                                <div class="col-md-6 title-velue">@ViewBag.userProfileObj.DOB.ToString("dd-MM-yyyy")</div>
                             </div>
                             <div class="d-flex">
                                 <span class="col-md-6 title">Phone Number:</span>
-                                <div class="col-md-6 title-velue">@ViewBag.userProfileObj.PhoneNumber</div>
+                                <div class="col-md-6 title-velue">+@ViewBag.userProfileObj.PhoneNumberCountryCode @ViewBag.userProfileObj.PhoneNumber</div>
                             </div>
                             <div class="d-flex">
                                 <span class="col-md-6 title">College/University:</span>
-                                <div class="col-md-6 title-velue">@ViewBag.userProfileObj.University</div>
+                                <div class="col-md-6 title-velue">
+                                    @if (@ViewBag.userProfileObj.College != null)
+                                    {
+                                        if (@ViewBag.userProfileObj.University != null)
+                                        {
+                                            @ViewBag.userProfileObj.College<text> / </text>@ViewBag.userProfileObj.University;
+                                        }
+                                        else
+                                        {
+                                            @ViewBag.userProfileObj.College<text> / N/A</text>;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (@ViewBag.userProfileObj.University != null)
+                                        {
+                                            <text>N/A / </text>@ViewBag.userProfileObj.University;
+                                        }
+                                        else
+                                        {
+                                            <text>N/A</text>;
+                                        }
+
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -101,15 +125,15 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">sr no.</th>
-                        <th scope="col">@Html.ActionLink("note title", "MemberDetail", new { sortBy = ViewBag.SortTitleParameter })</th>
-                        <th scope="col">@Html.ActionLink("category", "MemberDetail", new { sortBy = ViewBag.SortCategoryParameter })</th>
-                        <th scope="col">@Html.ActionLink("status", "MemberDetail", new { sortBy = ViewBag.SortStatusParameter })</th>
-                        <th scope="col">downloaded notes</th>
-                        <th scope="col">total earnings</th>
-                        <th scope="col">@Html.ActionLink("date added", "MemberDetail", new { sortBy = ViewBag.SortDateAddedParameter })</th>
-                        <th scope="col">@Html.ActionLink("published datee", "MemberDetail", new { sortBy = ViewBag.SortPublishedDateParameter })</th>
-                        <th scope="col"></th>
+                        <th scope="col" class="text-center">sr no.</th>
+                        <th scope="col" class="text-center">@Html.ActionLink("note title", "MemberDetail", new { sortBy = ViewBag.SortTitleParameter })</th>
+                        <th scope="col" class="text-center">@Html.ActionLink("category", "MemberDetail", new { sortBy = ViewBag.SortCategoryParameter })</th>
+                        <th scope="col" class="text-center">@Html.ActionLink("status", "MemberDetail", new { sortBy = ViewBag.SortStatusParameter })</th>
+                        <th scope="col" class="text-center">downloaded notes</th>
+                        <th scope="col" class="text-center">total earnings</th>
+                        <th scope="col" class="text-center">@Html.ActionLink("date added", "MemberDetail", new { sortBy = ViewBag.SortDateAddedParameter })</th>
+                        <th scope="col" class="text-center">@Html.ActionLink("published date", "MemberDetail", new { sortBy = ViewBag.SortPublishedDateParameter })</th>
+                        <th scope="col" class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,13 +155,13 @@
                                 <td class="title-col"><a href="/Admin/NoteDetail/@note.SellerNotes.ID">@note.SellerNotes.Title</a></td>
                                 <td>@note.NoteCategories.Name</td>
                                 <td>@note.ReferenceDatas.Value</td>
-                                <td class="title-col text-center"><a href="downloaded-notes.html">@note.SellerNotes.Downloads.Select(x=>x.ID==@note.SellerNotes.ID).Count()</a></td>
-                                <td class="text-center">$@note.SellerNotes.Downloads.Where(x=>x.NoteID== @note.SellerNotes.ID).Select(x=>x.PurchasedPrice).Sum()</td>
-                                <td>@note.SellerNotes.ModifiedDate</td>
+                                <td class="title-col text-center"><a href="/Admin/DownloadedNotes?Search=@note.SellerNotes.Title">@note.SellerNotes.Downloads.Where(x=>x.NoteID== @note.SellerNotes.ID && x.AttachmentPath != null && x.IsSellerHasAllowedDownload == true).Count()</a></td>
+                                <td class="text-center">$@note.SellerNotes.Downloads.Where(x=>x.NoteID== @note.SellerNotes.ID && x.AttachmentPath != null && x.IsSellerHasAllowedDownload == true).Select(x=>x.PurchasedPrice).Sum()</td>
+                                <td>@note.SellerNotes.CreatedDate.Value.ToString("dd-MM-yyyy, HH:mm")</td>
                                 <td>
                                     @if (note.ReferenceDatas.Value == "Published")
                                     {
-                                        @note.SellerNotes.PubilshedDate
+                                        @note.SellerNotes.PubilshedDate.Value.ToString("dd-MM-yyyy, HH:mm")
                                     }
                                     else
                                     {
@@ -148,7 +172,7 @@
                                 <div class="dropdown admin-notes-menu">
                                     <a role="button" class="dropbtn"><img src="/Content/Admin/images/Dashboard/three-dot.png" alt="delete-icon" /></a>
                                     <div class="dropdown-content">
-                                        <a href="/EditNote/DownloadAttechedFile/@note.SellerNotes.ID">Download Notes</a>
+                                        <a href="/Admin/DownloadAttechedFile/@note.SellerNotes.ID">Download Notes</a>
                                     </div>
                                 </div>
                                 </td>
@@ -170,7 +194,7 @@
                    {
                        Page,
                        sortBy = Request.QueryString["sortBy"]
-                   }), new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true })
+                   }), new PagedListRenderOptions() { Display = PagedListDisplayMode.IfNeeded, DisplayPageCountAndCurrentLocation = true, MaximumPageNumbersToDisplay = 5 })
                 </div>
             </div>
         </div>
