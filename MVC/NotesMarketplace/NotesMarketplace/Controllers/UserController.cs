@@ -265,7 +265,7 @@ namespace NotesMarketplace.Controllers
             ViewBag.SortCategoryParameter = sortByForProgress == "Category" ? "Category desc" : "Category";
             ViewBag.SortStatusParameter = sortByForProgress == "Status" ? "Status desc" : "Status";
 
-            List<SellerNote> sellerNotes = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(searchInProgress) || x.NoteCategory.Name.Contains(searchInProgress) || searchInProgress == null)).ToList();
+            List<SellerNote> sellerNotes = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(searchInProgress) || x.NoteCategory.Name.Contains(searchInProgress) || x.ReferenceData.Value.Contains(searchInProgress) || searchInProgress == null)).ToList();
             List<NoteCategory> noteCategories = dbobj.NoteCategories.ToList();
             List<ReferenceData> referenceDatas = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value != "Rejected" && x.Value != "Removed").ToList();
 

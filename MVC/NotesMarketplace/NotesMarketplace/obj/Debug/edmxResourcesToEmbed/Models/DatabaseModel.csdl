@@ -92,6 +92,7 @@
     <Property Name="IsActive" Type="Boolean" Nullable="false" />
     <NavigationProperty Name="User" Relationship="Self.FK_ReferenceData_Users_createdby" FromRole="ReferenceData" ToRole="Users" />
     <NavigationProperty Name="User1" Relationship="Self.FK_ReferenceData_Users_modifiedby" FromRole="ReferenceData" ToRole="Users" />
+    <NavigationProperty Name="SellerNotes" Relationship="NoteMarketplaceModel.FK_SellerNotes_ReferenceData" FromRole="ReferenceData" ToRole="SellerNote" />
   </EntityType>
   <EntityType Name="SellerNote">
     <Key>
@@ -133,6 +134,7 @@
     <NavigationProperty Name="SellerNotesAttachements" Relationship="Self.FK_SellerNotesAttachements_SellerNotes" FromRole="SellerNotes" ToRole="SellerNotesAttachements" />
     <NavigationProperty Name="SellerNotesReportedIssues" Relationship="Self.FK_SellerNotesReportedIssues_SellerNotes" FromRole="SellerNotes" ToRole="SellerNotesReportedIssues" />
     <NavigationProperty Name="SellerNotesReviews" Relationship="Self.FK_SellerNotesReviews_SellerNotes" FromRole="SellerNotes" ToRole="SellerNotesReviews" />
+    <NavigationProperty Name="ReferenceData" Relationship="NoteMarketplaceModel.FK_SellerNotes_ReferenceData" FromRole="SellerNote" ToRole="ReferenceData" />
   </EntityType>
   <EntityType Name="SellerNotesAttachement">
     <Key>
@@ -1016,6 +1018,10 @@
       <End Role="User" EntitySet="Users" />
       <End Role="Download" EntitySet="Downloads" />
     </AssociationSet>
+    <AssociationSet Name="FK_SellerNotes_ReferenceData" Association="NoteMarketplaceModel.FK_SellerNotes_ReferenceData">
+      <End Role="ReferenceData" EntitySet="ReferenceDatas" />
+      <End Role="SellerNote" EntitySet="SellerNotes" />
+    </AssociationSet>
   </EntityContainer>
   <Association Name="FK_Downloads_Users_createdby">
     <End Type="NoteMarketplaceModel.User" Role="User" Multiplicity="0..1" />
@@ -1026,6 +1032,18 @@
       </Principal>
       <Dependent Role="Download">
         <PropertyRef Name="CreatedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_SellerNotes_ReferenceData">
+    <End Type="NoteMarketplaceModel.ReferenceData" Role="ReferenceData" Multiplicity="1" />
+    <End Type="NoteMarketplaceModel.SellerNote" Role="SellerNote" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ReferenceData">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="SellerNote">
+        <PropertyRef Name="Status" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

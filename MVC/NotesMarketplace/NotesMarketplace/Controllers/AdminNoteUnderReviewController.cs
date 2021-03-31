@@ -24,7 +24,7 @@ namespace NotesMarketplace.Controllers
             User userObj = dbobj.Users.Where(x => x.EmailID == EmailID).FirstOrDefault();
 
 
-            List<SellerNote> NoteTitlePublished = dbobj.SellerNotes.Where(x => x.IsActive == true && (x.Title.Contains(SearchUnderReview)|| x.NoteCategory.Name.Contains(SearchUnderReview) || x.User.FirstName.Contains(SearchUnderReview) || x.User.LastName.Contains(SearchUnderReview) || (x.ModifiedDate.Value.Day + "-" + x.ModifiedDate.Value.Month + "-" + x.ModifiedDate.Value.Year).Contains(SearchUnderReview) || SearchUnderReview == null)).ToList();
+            List<SellerNote> NoteTitlePublished = dbobj.SellerNotes.Where(x => x.IsActive == true && (x.Title.Contains(SearchUnderReview)|| x.NoteCategory.Name.Contains(SearchUnderReview) || x.User.FirstName.Contains(SearchUnderReview) || x.ReferenceData.Value.Contains(SearchUnderReview) || x.User.LastName.Contains(SearchUnderReview) || (x.ModifiedDate.Value.Day + "-" + x.ModifiedDate.Value.Month + "-" + x.ModifiedDate.Value.Year).Contains(SearchUnderReview) || SearchUnderReview == null)).ToList();
             List<NoteCategory> CategoryNamePublished = dbobj.NoteCategories.ToList();
             List<ReferenceData> StatusNamePublished = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value != "Rejected" && x.Value != "Removed" && x.IsActive == true).ToList();
             List<User> UserDetails = dbobj.Users.ToList();
@@ -88,7 +88,7 @@ namespace NotesMarketplace.Controllers
                     break;
             }
 
-            var Seller = dbobj.Users.Where(x => x.IsEmailVerified == true && x.RoleID == 1 && x.IsActive == true)
+            var Seller = dbobj.Users.Where(x => x.IsEmailVerified == true && x.RoleID == dbobj.UserRoles.Where(r=>r.Name.ToLower() == "member").Select(r=>r.ID).FirstOrDefault() && x.IsActive == true)
                         .Select(s => new
                         {
                             Text = s.FirstName + "" + s.LastName,

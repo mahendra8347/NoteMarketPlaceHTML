@@ -427,6 +427,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_SellerNotes_ReferenceData">
+    <End Role="ReferenceData" Type="Self.ReferenceData" Multiplicity="1" />
+    <End Role="SellerNotes" Type="Self.SellerNotes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ReferenceData">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="SellerNotes">
+        <PropertyRef Name="Status" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK_SellerNotes_Users">
     <End Role="Users" Type="Self.Users" Multiplicity="1" />
     <End Role="SellerNotes" Type="Self.SellerNotes" Multiplicity="*" />
@@ -820,6 +832,10 @@
     </AssociationSet>
     <AssociationSet Name="FK_SellerNotes_NoteTypes" Association="Self.FK_SellerNotes_NoteTypes">
       <End Role="NoteTypes" EntitySet="NoteTypes" />
+      <End Role="SellerNotes" EntitySet="SellerNotes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_SellerNotes_ReferenceData" Association="Self.FK_SellerNotes_ReferenceData">
+      <End Role="ReferenceData" EntitySet="ReferenceData" />
       <End Role="SellerNotes" EntitySet="SellerNotes" />
     </AssociationSet>
     <AssociationSet Name="FK_SellerNotes_Users" Association="Self.FK_SellerNotes_Users">

@@ -14,6 +14,12 @@ namespace NotesMarketplace.Models
     
     public partial class ReferenceData
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ReferenceData()
+        {
+            this.SellerNotes = new HashSet<SellerNote>();
+        }
+    
         public int ID { get; set; }
         public string Value { get; set; }
         public string DataValue { get; set; }
@@ -26,5 +32,7 @@ namespace NotesMarketplace.Models
     
         public virtual User User { get; set; }
         public virtual User User1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<SellerNote> SellerNotes { get; set; }
     }
 }
