@@ -113,14 +113,24 @@
 
         <!-- table area -->
         <div class="row">
-            <div class="col-md-12 vertical-heading-sm">
+            <div class="col-md-6 vertical-heading-sm">
                 <h3>Notes</h3>
+            </div>
+            <div class="col-md-6 col-sm-12 col-xs-12 mt-4 mb-0">
+                <div class="progress-note-btn">
+                    @*@using (Html.BeginForm("MemberDetail", "AdminMember", FormMethod.Get, new { id= @ViewBag.userObj }))
+                    {
+                        <input type="text" name="SearchPublished" class="search-enter-progress" placeholder="Search" title="Type
+                                        in a name" />
+                        <a href=""><button type="submit">Search</button></a>
+                    }*@
+                </div>
             </div>
         </div>
 
         <div class="progress-table general-big-table" style="overflow-x: auto;">
             @{
-                IPagedList<NotesMarketplace.Models.AllNotesOfMember> AllNotes = ViewBag.AllNotes;
+                    IPagedList <NotesMarketplace.Models.AllNotesOfMember> AllNotes = ViewBag.AllNotes;
             }
             <table class="table">
                 <thead>

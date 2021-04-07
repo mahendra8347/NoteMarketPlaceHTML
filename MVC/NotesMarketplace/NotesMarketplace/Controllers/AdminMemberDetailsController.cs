@@ -65,7 +65,7 @@ namespace NotesMarketplace.Controllers
         }
 
         [Route("MemberDetail/{id}")]
-        public ActionResult MemberDetail(int? id, string sortBy, int? Page)
+        public ActionResult MemberDetail(int? id, string sortBy, int? Page, string SearchPublished)
         {
             if (id == null)
             {
@@ -95,7 +95,10 @@ namespace NotesMarketplace.Controllers
             ViewBag.SortStatusParameter = sortBy == "Status" ? "Status desc" : "Status";
             ViewBag.SortPublishedDateParameter = sortBy == "PublishedDate" ? "PublishedDate desc" : "PublishedDate";
 
-            List<SellerNote> sellerNotes = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.IsActive == true).ToList();
+            List<SellerNote> sellerNotes = dbobj.SellerNotes.Where(x => x.SellerID == userObj.ID && x.IsActive == true && (x.Title.Contains(SearchPublished) || x.NoteCategory.Name.Contains(SearchPublished) || x.ReferenceData.Value.Contains(SearchPublished)
+             || (x.PubilshedDate.Value.Day + "-" + x.PubilshedDate.Value.Month + "-" + x.PubilshedDate.Value.Year).Contains(SearchPublished)
+              || (x.ModifiedDate.Value.Day + "-" + x.ModifiedDate.Value.Month + "-" + x.ModifiedDate.Value.Year).Contains(SearchPublished)
+            || SearchPublished == null)).ToList();
             List<NoteCategory> noteCategories = dbobj.NoteCategories.ToList();
             List<ReferenceData> referenceDatas = dbobj.ReferenceDatas.Where(x => x.RefCategory == "Notes Status" && x.Value.ToLower() != "draft").ToList();
             List<Download> downloads = dbobj.Downloads.ToList();
