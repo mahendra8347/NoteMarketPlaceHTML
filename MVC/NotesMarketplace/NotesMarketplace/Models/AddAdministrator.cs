@@ -22,6 +22,7 @@ namespace NotesMarketplace.Models
         [Required(ErrorMessage = "Please Enter EmailID")]
         [EmailAddress(ErrorMessage = "Enter valid email address")]
         [Remote("EmailExits", "Account", ErrorMessage = "Email is Already Exist")]
+        [RegularExpression("^(([^<>()[\\]\\.,;:\\s@\"]+(\\.[^<>()[\\]\\.,;:\\s@\"]+)*)|(\".+\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$", ErrorMessage = "Envelid Email Id")]
         public string EmailID { get; set; }
 
         [Required(ErrorMessage = "Please select Country Code")]
