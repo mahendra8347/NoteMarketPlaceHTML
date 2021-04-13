@@ -26,14 +26,17 @@ namespace NotesMarketplace.Models
         public string EmailAddress { get; set; }
 
         [Required(ErrorMessage = "Please Enter Facebook URL")]
+        [Url(ErrorMessage ="Invelid URL")]
         [RegularExpression("((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)",ErrorMessage ="Invelid URL")]
         public string FacebookURL { get; set; }
 
         [Required(ErrorMessage = "Please Enter Twitter URL")]
+        [Url(ErrorMessage = "Invelid URL")]
         [RegularExpression("((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)", ErrorMessage = "Invelid URL")]
         public string TwitterURL { get; set; }
 
         [Required(ErrorMessage = "Please Enter Linkedin URL")]
+        [Url(ErrorMessage = "Invelid URL")]
         [RegularExpression("((http|https)://)(www.)?[a-zA-Z0-9@:%._\\+~#?&//=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)", ErrorMessage = "Invelid URL")]
         public string LinkedinURL { get; set; }
 
